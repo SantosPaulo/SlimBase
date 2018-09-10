@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\SlimBase;
+use App\Traits\Responsable;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use App\Models\VTM;
 
 class ApiController extends SlimBase
 {
+    use Responsable;
+
     /**
      * Index.
      * @param ServerRequestInterface $request
@@ -17,10 +19,14 @@ class ApiController extends SlimBase
      */
     public function index(Request $request, Response $response, Array $args = [])
     {
-        $pdo = $this->pdoMysql->prepare('SELECT * FROM VTM LIMIT 10');
+        $result = $this->pdoMysql->prepare('
+            SELECT * FROM (
+                (SELECT AMP.NM AS PRODUCT_NAME FROM AMP LIMIT 1)
+                    UNION ALL 
+                (SELECT VMP.NM AS PRODUCT_NAME FROM VMP LIMIT 1)
+            ) AS MERGED_TABLE
+        ');
 
-        $this->logger->error('Bar');
-
-        return $response->withJson([ 'vtm' => $pdo ], 200);
+        return $response->withJson($this->response($result), 201);
     }
 }
