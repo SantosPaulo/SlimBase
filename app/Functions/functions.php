@@ -1,0 +1,3 @@
+<?php
+
+// Global functions will be here...
