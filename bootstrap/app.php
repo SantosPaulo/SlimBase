@@ -9,10 +9,12 @@ use Slim\HttpCache\CacheProvider;
 use Slim\HttpCache\Cache;
 use Slim\Views\{Twig, TwigExtension};
 use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use App\Http\Controllers\{HomeController, ApiController};
 use App\Http\Middlewares\CorsMiddleware;
 use Illuminate\Database\Capsule\Manager;
 use App\Classes\MySqlConnector;
+use RKA\Middleware\IpAddress;
 
 $dotenv = (new Dotenv(__DIR__ . '/../'))->load();
 $config = new Config(__DIR__ . '/../configs/index.php');
@@ -41,6 +43,12 @@ $container['pdoMysql'] = function ($c) {
     return new MySqlConnector($c['settings']['mysql']);
 };
 
+$container['logger'] = function($c) {
+    $logger = new Logger('my_logger');
+    $file_handler = new StreamHandler(__DIR__ . '/../logs/app.log');
+    $logger->pushHandler($file_handler);
+    return $logger;
+};
 
 // set config as global
 $container['config'] = function ($c) use ($config) {
@@ -105,5 +113,6 @@ $container['phpErrorHandler'] = function ($c) {
 // Register global middlewares.
 $app->add(new CorsMiddleware($container));
 $app->add(new Cache('public', 86400));
+$app->add(new IpAddress(true, []));
 
 require __DIR__ . '/../routes/api.php';

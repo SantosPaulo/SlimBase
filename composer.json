@@ -7,7 +7,8 @@
         "illuminate/database": "~5.1",
         "vlucas/phpdotenv": "^2.5",
         "hassankhan/config": "^1.1",
-        "slim/twig-view": "^2.4"
+        "slim/twig-view": "^2.4",
+        "akrabat/rka-ip-address-middleware": "^0.6.0"
     },
     "autoload": {
         "psr-4": {
@@ -18,6 +19,9 @@
         ]
     },
     "scripts": {
-        "serve": "php -S localhost:1113 -t public public/index.php"
+        "serve": "php -S localhost:1117 -t public public/index.php"
+    },
+    "config": {
+        "process-timeout": 0
     }
 }

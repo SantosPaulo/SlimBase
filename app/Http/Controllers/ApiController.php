@@ -19,6 +19,8 @@ class ApiController extends SlimBase
     {
         $pdo = $this->pdoMysql->prepare('SELECT * FROM VTM LIMIT 10');
 
+        $this->logger->error('Bar');
+
         return $response->withJson([ 'vtm' => $pdo ], 200);
     }
 }

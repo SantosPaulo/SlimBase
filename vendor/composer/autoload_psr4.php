@@ -15,6 +15,7 @@ return array(
     'Slim\\Views\\' => array($vendorDir . '/slim/twig-view/src'),
     'Slim\\HttpCache\\' => array($vendorDir . '/slim/http-cache/src'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
+    'RKA\\Middleware\\' => array($vendorDir . '/akrabat/rka-ip-address-middleware/src'),
     'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),

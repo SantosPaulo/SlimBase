@@ -19,6 +19,7 @@ class ComposerStaticInit3869b8f561b21d9c83055f7d26a28de6
     public static $firstCharsPsr4 = array (
         'T' => true,
         'S' => true,
+        'R' => true,
         'P' => true,
         'N' => true,
         'M' => true,
@@ -64,6 +65,10 @@ class ComposerStaticInit3869b8f561b21d9c83055f7d26a28de6
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
+        ),
+        'RKA\\Middleware\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/akrabat/rka-ip-address-middleware/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (
