@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\SlimBase;
-use App\Traits\Responsable;
+use App\Traits\{Responsable, Queries};
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ApiController extends SlimBase
 {
-    use Responsable;
+    use Responsable, Queries;
 
     /**
      * Index.
@@ -19,14 +19,8 @@ class ApiController extends SlimBase
      */
     public function index(Request $request, Response $response, Array $args = [])
     {
-        $result = $this->pdoMysql->prepare('
-            SELECT * FROM (
-                (SELECT AMP.NM AS PRODUCT_NAME FROM AMP LIMIT 1)
-                    UNION ALL 
-                (SELECT VMP.NM AS PRODUCT_NAME FROM VMP LIMIT 1)
-            ) AS MERGED_TABLE
-        ');
+        $result = $this->pdoMysql->prepare($this->select('AMP'));
 
-        return $response->withJson($this->response($result), 201);
+        return $response->withJson($this->response($result), 200);
     }
 }

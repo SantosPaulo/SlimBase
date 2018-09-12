@@ -13,6 +13,11 @@ return [
             'path'  => __DIR__ . '/../logs/app.log',
         ],
 
+        'twig' => [
+            'viewsPath' => __DIR__ . '/../resources/views',
+            'cachePath' => __DIR__ . '/../resources/cache',
+        ],
+
         // elequent settings
         'db' => [
             'driver'    => env('DB_DRIVER'),

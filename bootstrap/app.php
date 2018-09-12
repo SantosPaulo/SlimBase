@@ -1,8 +1,10 @@
 <?php
 
+// include vendor
 require __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
+use Dotenv\Exception\InvalidPathException;
 use Noodlehaus\Config;
 use Slim\App as Slim;
 use Slim\HttpCache\CacheProvider;
@@ -16,11 +18,20 @@ use Illuminate\Database\Capsule\Manager;
 use App\Classes\MySqlConnector;
 use RKA\Middleware\IpAddress;
 
-$dotenv = (new Dotenv(__DIR__ . '/../'))->load();
+// load .env file
+try {
+    $dotenv = (new Dotenv(__DIR__ . '/../'))->load();
+} catch (InvalidPathException $e) {
+    die('No ".env" file was found...');
+}
+
+// load application configs
 $config = new Config(__DIR__ . '/../configs/index.php');
 
+// create Slim 3 app instance
 $app = new Slim([ 'settings' => $config->get('settings') ]);
 
+// initialize application container
 $container = $app->getContainer();
 
 // service cache
@@ -34,6 +45,7 @@ $capsule->addConnection($container['settings']['db']);
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
+// set eloquent in application
 $container['db'] = function ($container) use ($capsule) {
     return $capsule;
 };
@@ -43,9 +55,10 @@ $container['pdoMysql'] = function ($c) {
     return new MySqlConnector($c['settings']['mysql']);
 };
 
+// set application logger
 $container['logger'] = function($c) {
-    $logger = new Logger('my_logger');
-    $file_handler = new StreamHandler(__DIR__ . '/../logs/app.log');
+    $logger = new Logger($c['settings']['logger']['name']);
+    $file_handler = new StreamHandler($c['settings']['logger']['path']);
     $logger->pushHandler($file_handler);
     return $logger;
 };
@@ -57,13 +70,14 @@ $container['config'] = function ($c) use ($config) {
 
 // views
 $container['view'] = function ($c) {
-    $view = new Twig(__DIR__ . '/../resources/views', [
-        'cache' => __DIR__ . '/../resources/cache'
+    $view = new Twig($c['settings']['twig']['viewsPath'], [
+        'cache' => $c['settings']['twig']['cachePath'],
     ]);
 
     // Instantiate and add Slim specific extension
     $basePath = rtrim(str_ireplace('index.php', '', $c->get('request')->getUri()->getBasePath()), '/');
     $view->addExtension(new TwigExtension($c->get('router'), $basePath));
+    $view['baseUrl'] = $c['request']->getUri()->getBaseUrl();
 
     return $view;
 };
@@ -115,4 +129,5 @@ $app->add(new CorsMiddleware($container));
 $app->add(new Cache('public', 86400));
 $app->add(new IpAddress(true, []));
 
+// include application routes
 require __DIR__ . '/../routes/api.php';
